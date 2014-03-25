@@ -37,11 +37,17 @@ public class MapModel extends DefaultTableModel {
     private ImageIcon enemyIcon;
     private ImageIcon bombIcon;
     private int id = -1;
+    
+    
 
     public MapModel(KeyListener kl) {
         initImages();
         startMapView();
         this.viewer.addKeyListener(kl);
+    }
+    
+    public MapView getViewer(){
+    	return viewer;
     }
 
     public synchronized void loadMap(int id, String ser) {
@@ -80,6 +86,7 @@ public class MapModel extends DefaultTableModel {
 
     private void putPathIn(int x, int y) {
         setValueAt(this.grassIcon, y, x);
+      
     }
 
     private void putExitIn(int x, int y) {
@@ -118,6 +125,8 @@ public class MapModel extends DefaultTableModel {
         bombIcon = new ImageIcon(BOMB_ICON_DIR);
     }
 
+ 
+    
     private void parseString(String ser) {
 
         String[] split = ser.split("-");

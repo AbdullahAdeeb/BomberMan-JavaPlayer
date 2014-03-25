@@ -5,7 +5,14 @@
 package GameView;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+
 import javax.swing.JTable;
+import javax.swing.RepaintManager;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumnModel;
 
 /**
@@ -13,11 +20,12 @@ import javax.swing.table.TableColumnModel;
  * @author abdullahadeeb
  */
 public class MapView extends javax.swing.JFrame{
-
     /**
      * Creates new form mapView
      */
     MapModel model;
+
+    
     
     public MapView(MapModel model) {
         this.setTitle("Player: Not Connected");
@@ -28,6 +36,9 @@ public class MapView extends javax.swing.JFrame{
         
         
         this.mapTable.setModel(this.model);
+        //mapTable.set
+       // SwingUtilities.invokeLater(mapTable.setModel(model););
+        
         this.mapTable.setCellSelectionEnabled(false);
         this.mapTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         
@@ -40,16 +51,23 @@ public class MapView extends javax.swing.JFrame{
         this.mapPanel.setBackground(Color.BLUE);
         this.mapTable.setPreferredScrollableViewportSize(this.mapTable.getSize());
         this.mapPanel.setSize(this.mapTable.getSize());
+        
+
+
+        
     }
     
     public void hideWaitingForConnection() {
         this.jLabel2.setVisible(false);
     }
-    
+
     
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
+		
+    	
 
         mapPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -59,6 +77,7 @@ public class MapView extends javax.swing.JFrame{
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        
         mapPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         mapTable.setBackground(new java.awt.Color(0, 0, 0));
@@ -132,7 +151,6 @@ public class MapView extends javax.swing.JFrame{
                 .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(40, 40, 40))
         );
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

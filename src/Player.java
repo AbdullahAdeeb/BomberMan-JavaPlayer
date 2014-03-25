@@ -5,10 +5,18 @@
 
 import GameView.MapModel;
 import UDPCommunication.Communication;
+
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import javax.swing.JFrame;
+import javax.swing.RepaintManager;
+
+import sun.tools.jar.Main;
 
 /**
  *
@@ -21,6 +29,7 @@ public class Player implements KeyListener {
     int id;
 
     Player() {
+
         mapModel = new MapModel(this);
         com = new Communication(new IncomingActionListener(), -1); //sending id as -1 to request new ID from server.
 
