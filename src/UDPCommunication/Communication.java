@@ -14,10 +14,11 @@ public class Communication {
     Sender sender;
     int id;
     ActionListener al;
+    InetAddress server;
 
-    public Communication(ActionListener al, int id) {
+    public Communication(ActionListener al, int id, InetAddress server) {
 
-
+        this.server = server;
         this.al = al;
         this.id = id;
         init();
@@ -38,18 +39,8 @@ public class Communication {
         byte[] cmd = new byte[2];
         cmd[0] = (byte) id;
         cmd[1] = (byte) c;
-        try {
-            sendPack = new DatagramPacket(cmd, cmd.length,InetAddress.getLocalHost(), 5000);
-        } catch (UnknownHostException ex) {
-            try {
-                sendPack = new DatagramPacket(cmd, cmd.length,InetAddress.getByName("localhost"), 5000);
-            } catch (UnknownHostException ex1) {
-                // TODO log this
-                return;
-            }
 
-        }
-
+        sendPack = new DatagramPacket(cmd, cmd.length, this.server, 5000);
         sender.sendCmd(sendPack);
     }
 

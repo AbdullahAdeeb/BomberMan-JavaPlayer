@@ -4,6 +4,7 @@
  */
 package GameView;
 
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.logging.Level;
@@ -31,88 +32,23 @@ public class MapModel extends DefaultTableModel {
     private ImageIcon exitIcon;
     private ImageIcon playerIcon;
     MapView viewer;
-    int width = 10;
-    int height = 10;
+    int colCount = 10;
+    int rowCount = 10;
     boolean isExitSet = false;
     private ImageIcon enemyIcon;
     private ImageIcon bombIcon;
+//    private MapDefaultTableModel mapTableModel;
     private int id = -1;
-    
-    
 
-    public MapModel(KeyListener kl) {
+    public MapModel(KeyListener kl, ActionListener connectButtonListener) {
+        super(10, 10);
+
         initImages();
         startMapView();
-        this.viewer.addKeyListener(kl);
-    }
-    
-    public MapView getViewer(){
-    	return viewer;
-    }
 
-    public synchronized void loadMap(int id, String ser) {
-        if (this.id == -1) {
-            this.id = id;
-            this.viewer.setTitle("Player: Conencted ID <" + getID() + ">");
-        }
-
-        this.viewer.hideWaitingForConnection();
-        setColumnCount(width);
-        setRowCount(height);
-        parseString(ser);
-    }
-
-    private void startMapView() {
-        try {
-            viewer = new MapView(this);
-            viewer.setVisible(true);
-        } catch (Exception ex) {
-            Logger.getLogger(MapModel.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(0);
-        }
-    }
-
-    public void setMapView(MapView v) {
-        this.viewer = v;
-    }
-
-    private void putWallIn(int x, int y) {
-        setValueAt(this.wallIcon, y, x);
-    }
-
-    private void putBoxIn(int x, int y) {
-        setValueAt(this.boxIcon, y, x);
-    }
-
-    private void putPathIn(int x, int y) {
-        setValueAt(this.grassIcon, y, x);
-      
-    }
-
-    private void putExitIn(int x, int y) {
-        setValueAt(this.exitIcon, y, x);
-    }
-
-    public synchronized void putBombOn(int x, int y) {
-        setValueAt(bombIcon, y, x);
-    }
-
-    public synchronized void setPlayerOnEntity(int id, int x, int y) {
-        System.out.println("player on entity " + x + "><" + y + "id =" + id);
-        setValueAt(playerIcon, y, x);
-    }
-
-    public synchronized void setEnemyOnEntity(int id, int x, int y) {
-        System.out.println("player on entity " + x + "><" + y);
-        setValueAt(enemyIcon, y, x);
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
+        this.viewer.setConnectButtonListener(kl,connectButtonListener);
+        
+        
     }
 
     private void initImages() {
@@ -125,53 +61,119 @@ public class MapModel extends DefaultTableModel {
         bombIcon = new ImageIcon(BOMB_ICON_DIR);
     }
 
- 
-    
+    private void startMapView() {
+        try {
+            viewer = new MapView(this);
+            viewer.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(MapModel.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(0);
+        }
+    }
+
+    public synchronized void loadMap(int id, String ser) {
+        if (this.id == -1) {
+            this.id = id;
+            this.viewer.setTitle("Player: Conencted ID <" + getID() + ">");
+            this.viewer.hideWaitingForConnection();
+
+        }
+        parseString(ser);
+    }
+
+    private void putWallIn(int x, int y) {
+        this.setValueAt(this.wallIcon, y, x);
+    }
+
+    private void putBoxIn(int x, int y) {
+        this.setValueAt(this.boxIcon, y, x);
+    }
+
+    private void putPathIn(int x, int y) {
+        this.setValueAt(this.grassIcon, y, x);
+
+    }
+
+    private void putExitIn(int x, int y) {
+        this.setValueAt(this.exitIcon, y, x);
+    }
+
+    public synchronized void putBombOn(int x, int y) {
+        this.setValueAt(bombIcon, y, x);
+    }
+
+    public synchronized void setPlayerOnEntity(int x, int y) {
+        System.out.println("player on entity " + x + "><" + y + "id =" + id);
+        this.setValueAt(playerIcon, y, x);
+    }
+
+    public synchronized void setEnemyOnEntity(int x, int y) {
+        System.out.println("Enemy on entity " + x + "><" + y);
+        this.setValueAt(enemyIcon, y, x);
+    }
+
     private void parseString(String ser) {
 
         String[] split = ser.split("-");
 
-        int block = 0;
-
-        int row = width;
-        int col = this.height;
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                int code = Integer.parseInt(split[block]);
+        int cellCode = 0;
+        int row = this.colCount;
+        int col = this.rowCount;
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < col; c++) {
+                int code = Integer.parseInt(split[cellCode]);
                 switch (code) {
                     case Entity.BOX:
-                        putBoxIn(i, j);
+                        putBoxIn(r, c);
                         break;
                     case Entity.EXIT:
-                        putExitIn(i, j);
+                        putExitIn(r, c);
                         break;
                     case Entity.PATH:
-                        putPathIn(i, j);
+                        putPathIn(r, c);
                         break;
                     case Entity.WALL:
-                        putWallIn(i, j);
+                        putWallIn(r, c);
                         break;
                     case Entity.BOMB:
-                        putBombOn(i, j);
+                        putBombOn(r, c);
                         break;
                     default:
                         if (code == this.id) {
-                            setPlayerOnEntity(code, i, j);
+                            setPlayerOnEntity(r, c);
                         } else {
-                            setEnemyOnEntity(code, i, j);
+                            setEnemyOnEntity(r, c);
                         }
                 }
-                block++;
+                cellCode++;
             }
         }
+
     }
 
-    @Override
-    public Class<?> getColumnClass(int i) {
-        return Icon.class;
+    // GETTERS AND SETTERS
+    public MapView getViewer() {
+        return viewer;
+    }
+
+    public int getWidth() {
+        return colCount;
+    }
+
+    public int getHeight() {
+        return rowCount;
     }
 
     protected int getID() {
         return this.id;
+    }
+
+    /**
+     * *****************
+     * INNER CLASSES
+     */////////////////
+    @Override
+    public Class<?> getColumnClass(int i) {
+        return Icon.class;
     }
 }

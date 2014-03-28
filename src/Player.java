@@ -6,63 +6,75 @@
 import GameView.MapModel;
 import UDPCommunication.Communication;
 
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
-import javax.swing.JFrame;
-import javax.swing.RepaintManager;
-
-import sun.tools.jar.Main;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author abdullahadeeb
  */
-public class Player implements KeyListener {
+public class Player {
 
     MapModel mapModel;
-    private final Communication com;
+    private Communication com = null;
     int id;
 
     Player() {
-
-        mapModel = new MapModel(this);
-        com = new Communication(new IncomingActionListener(), -1); //sending id as -1 to request new ID from server.
-
+        mapModel = new MapModel(new playerKeysListener(), new ConnectButtonListener());
     }
 
     public static void main(String[] args) {
         Player p = new Player();
     }
 
-    @Override
-    public void keyTyped(KeyEvent ke) {
+    class playerKeysListener implements KeyListener {
+
+        @Override
+        public void keyTyped(KeyEvent ke) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent ke) {
+            if (ke.getKeyCode() == KeyEvent.VK_D || ke.getKeyCode() == KeyEvent.VK_RIGHT) {
+                com.send(id, 1);
+            } else if (ke.getKeyCode() == KeyEvent.VK_A || ke.getKeyCode() == KeyEvent.VK_LEFT) {
+                System.out.println("left");
+                com.send(id, 4);
+            } else if (ke.getKeyCode() == KeyEvent.VK_W || ke.getKeyCode() == KeyEvent.VK_UP) {
+                System.out.println("up");
+                com.send(id, 2);
+            } else if (ke.getKeyCode() == KeyEvent.VK_S || ke.getKeyCode() == KeyEvent.VK_DOWN) {
+                System.out.println("down");
+                com.send(id, 3);
+            } else if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
+                System.out.println("bomb");
+                com.send(id, 5);
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent ke) {
+        }
     }
 
-    @Override
-    public void keyPressed(KeyEvent ke) {
-    }
+    class ConnectButtonListener implements ActionListener {
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_D) {
-            com.send(id, 1);
-        } else if (e.getKeyCode() == KeyEvent.VK_A) {
-            System.out.println("left");
-            com.send(id, 4);
-        } else if (e.getKeyCode() == KeyEvent.VK_W) {
-            System.out.println("up");
-            com.send(id, 2);
-        } else if (e.getKeyCode() == KeyEvent.VK_S) {
-            System.out.println("down");
-            com.send(id, 3);
-        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            System.out.println("bomb");
-            com.send(id, 5);
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            String c = ae.getActionCommand();
+            try {
+                InetAddress ip = InetAddress.getByName(c);
+                com = new Communication(new IncomingActionListener(), -1, ip); //sending id as -1 to request new ID from server.
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }
 
@@ -83,7 +95,7 @@ public class Player implements KeyListener {
                     System.out.println("--RECEIVED CMD--\nUpdate Map\n");
                     actionCmd = actionCmd.substring(3);
                     actionCmd = actionCmd.trim();
-                    System.out.println(actionCmd);
+//                    System.out.println(actionCmd);
                     System.out.println("loading map...");
 //                    try {
 //                        Thread.sleep(500);
@@ -91,7 +103,7 @@ public class Player implements KeyListener {
 //                        System.err.println("we got an error in the sleep ");
 //                    }
 //                    System.out.println(">>"+id);
-                    mapModel.loadMap(p, new String(actionCmd));
+                    mapModel.loadMap(p, actionCmd);
                 } else if (c == 1) {
                     System.out.println("--RECEIVED CMD--\nACK\n");
                 } else if (c == 7) {
