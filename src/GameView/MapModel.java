@@ -4,6 +4,7 @@
  */
 package GameView;
 
+import GameLogic.Player;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.net.URL;
@@ -26,23 +27,30 @@ public class MapModel extends DefaultTableModel {
     private URL BOMB_ICON_DIR = this.getClass().getClassLoader().getResource("res/BOMB1.JPG");
     private URL ENEMY_ICON_DIR = this.getClass().getClassLoader().getResource("res/ENEMY1.JPG");
     private URL PLAYER_ICON_DIR = this.getClass().getClassLoader().getResource("res/PLAYER1.PNG");
+    private URL POWERUP_ICON_DIR = this.getClass().getClassLoader().getResource("res/POWER1.JPG");
+    private URL AI_ICON_DIR = this.getClass().getClassLoader().getResource("res/AI1.JPG");
     private ImageIcon grassIcon;
     private ImageIcon wallIcon;
     private ImageIcon boxIcon;
     private ImageIcon exitIcon;
     private ImageIcon playerIcon;
+    private ImageIcon aiIcon;
+    private ImageIcon powerupIcon;
     MapView viewer;
     int colCount = 10;
     int rowCount = 10;
     boolean isExitSet = false;
     private ImageIcon enemyIcon;
     private ImageIcon bombIcon;
+    Player parentClass;
 //    private MapDefaultTableModel mapTableModel;
     private int id = -1;
 
-    public MapModel(KeyListener kl, ActionListener connectButtonListener) {
+    public MapModel(KeyListener kl, ActionListener connectButtonListener,Player parent) {
         super(10, 10);
 
+        parentClass = parent;
+        
         initImages();
         startMapView();
 
@@ -59,6 +67,8 @@ public class MapModel extends DefaultTableModel {
         playerIcon = new ImageIcon(PLAYER_ICON_DIR);
         enemyIcon = new ImageIcon(ENEMY_ICON_DIR);
         bombIcon = new ImageIcon(BOMB_ICON_DIR);
+        powerupIcon = new ImageIcon(POWERUP_ICON_DIR);
+        aiIcon = new ImageIcon(AI_ICON_DIR);
     }
 
     private void startMapView() {
@@ -101,6 +111,10 @@ public class MapModel extends DefaultTableModel {
     public synchronized void putBombOn(int x, int y) {
         this.setValueAt(bombIcon, y, x);
     }
+    
+    public synchronized void putPowerUpOn(int x, int y) {
+        this.setValueAt(powerupIcon, y, x);
+    }
 
     public synchronized void setPlayerOnEntity(int x, int y) {
         System.out.println("player on entity " + x + "><" + y + "id =" + id);
@@ -138,6 +152,9 @@ public class MapModel extends DefaultTableModel {
                     case Entity.BOMB:
                         putBombOn(r, c);
                         break;
+                    case Entity.POWERUP:
+                    	putPowerUpOn(r, c);
+                    	break;
                     default:
                         if (code == this.id) {
                             setPlayerOnEntity(r, c);

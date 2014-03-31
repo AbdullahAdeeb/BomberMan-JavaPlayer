@@ -8,8 +8,11 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JTable;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -21,15 +24,27 @@ public class MapView extends javax.swing.JFrame {
 
     private ActionListener connectButtonListener;
     private KeyListener keyListener;
+    private MapModel parentModel;
 
     /**
      * Creates new form mapView
      */
 //    DefaultTableModel model;
+    
+    class WindowEventHandler extends WindowAdapter {
+    	  public void windowClosing(WindowEvent evt) {
+    		parentModel.parentClass.getCommunications().send(parentModel.parentClass.getID(), 6);
+    	    System.exit(0);
+    	  }
+    	}
+
+    
     public MapView(DefaultTableModel model) {
         initComponents();
         this.mapTable.setModel(model);
-
+        
+        parentModel = (MapModel) model;
+        
         this.setTitle("Player: Not Connected");
 
 
@@ -47,6 +62,10 @@ public class MapView extends javax.swing.JFrame {
         this.mapPanel.setBackground(Color.BLUE);
         this.mapTable.setPreferredScrollableViewportSize(this.mapTable.getSize());
         this.mapPanel.setSize(this.mapTable.getSize());
+        
+        addWindowListener(new WindowEventHandler());
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
 
     }
 
